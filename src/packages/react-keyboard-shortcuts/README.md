@@ -1,140 +1,192 @@
+<div align="center">
+
 # react-keyboard-shortcuts
 
-A comprehensive keyboard shortcut management library for React applications with TypeScript support.
+### Powerful keyboard shortcut management for React applications
 
-[![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-18+-61dafb.svg)](https://reactjs.org/)
+[![npm version](https://img.shields.io/npm/v/react-keyboard-shortcuts.svg?style=flat-square)](https://www.npmjs.com/package/react-keyboard-shortcuts)
+[![npm downloads](https://img.shields.io/npm/dm/react-keyboard-shortcuts.svg?style=flat-square)](https://www.npmjs.com/package/react-keyboard-shortcuts)
+[![bundle size](https://img.shields.io/bundlephobia/minzip/react-keyboard-shortcuts?style=flat-square)](https://bundlephobia.com/package/react-keyboard-shortcuts)
+[![TypeScript](https://img.shields.io/badge/TypeScript-Ready-3178c6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-18+-61dafb?style=flat-square&logo=react&logoColor=white)](https://reactjs.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 
-## Features
+[Features](#-features) · [Installation](#-installation) · [Quick Start](#-quick-start) · [API](#-api-reference) · [Examples](#-examples)
 
-- **Global Shortcut Manager** - Singleton-based centralized shortcut coordination
-- **Flexible Key Combinations** - Support for all modifiers (Ctrl, Alt, Shift, Meta) and special keys
-- **Component-Scoped Registration** - Automatic cleanup on component unmount
-- **Dynamic Enable/Disable** - Toggle shortcuts without unregistering
-- **Floating UI Component** - Built-in panel to display registered shortcuts
-- **Input Field Awareness** - Automatically skips shortcuts in input fields (unless modifiers are used)
-- **Full TypeScript Support** - Complete type definitions included
-- **Zero Dependencies** - No external runtime dependencies
+</div>
 
-## Installation
+---
+
+## Why react-keyboard-shortcuts?
+
+Building keyboard-accessible applications shouldn't be complicated. This library provides a **simple, declarative API** to add keyboard shortcuts to your React components with automatic cleanup, TypeScript support, and a beautiful floating panel to display shortcuts to your users.
+
+```tsx
+// It's this simple!
+useShortcut('Ctrl+S', () => saveDocument(), { description: 'Save' });
+```
+
+---
+
+## ✨ Features
+
+<table>
+<tr>
+<td width="50%">
+
+### 🎯 Simple & Intuitive
+Register shortcuts with a single line of code. No boilerplate, no complexity.
+
+### 🧹 Auto Cleanup
+Shortcuts are automatically removed when components unmount. No memory leaks.
+
+### ⌨️ All Keys Supported
+Full support for modifiers (Ctrl, Alt, Shift, Meta) and special keys (F1-F12, arrows, etc.)
+
+### 🎨 Floating UI Panel
+Built-in component to display all registered shortcuts to users.
+
+</td>
+<td width="50%">
+
+### 🔄 Dynamic Control
+Enable/disable shortcuts on the fly without re-registering.
+
+### 📝 Input Aware
+Automatically ignores shortcuts in input fields (unless modifiers are used).
+
+### 📦 Zero Dependencies
+No external runtime dependencies. Just React.
+
+### 💪 TypeScript First
+Complete type definitions for the best developer experience.
+
+</td>
+</tr>
+</table>
+
+---
+
+## 📦 Installation
 
 ```bash
+# npm
 npm install react-keyboard-shortcuts
-```
 
-or
-
-```bash
+# yarn
 yarn add react-keyboard-shortcuts
+
+# pnpm
+pnpm add react-keyboard-shortcuts
 ```
 
-## Quick Start
+---
 
-### Basic Usage with `useShortcut`
+## 🚀 Quick Start
+
+### The Simple Way
 
 ```tsx
 import { useShortcut } from 'react-keyboard-shortcuts';
 
-function MyComponent() {
+function SaveButton() {
   useShortcut('Ctrl+S', (e) => {
-    console.log('Save triggered!');
+    e.preventDefault();
+    console.log('Document saved!');
   }, { description: 'Save document' });
 
-  return <div>Press Ctrl+S to save</div>;
+  return <button>Save (Ctrl+S)</button>;
 }
 ```
 
-### Advanced Usage with `useKeyboardShortcuts`
+### Multiple Shortcuts
 
 ```tsx
 import { useKeyboardShortcuts } from 'react-keyboard-shortcuts';
 
-function EditorComponent() {
-  const { register, enable, disable, clear } = useKeyboardShortcuts('editor');
+function Editor() {
+  const { register } = useKeyboardShortcuts('editor');
 
   useEffect(() => {
     register([
-      {
-        keys: 'Ctrl+S',
-        callback: () => saveDocument(),
-        options: { description: 'Save document' }
-      },
-      {
-        keys: 'Ctrl+Z',
-        callback: () => undo(),
-        options: { description: 'Undo' }
-      },
-      {
-        keys: 'Ctrl+Y',
-        callback: () => redo(),
-        options: { description: 'Redo' }
-      }
+      { keys: 'Ctrl+S', callback: save, options: { description: 'Save' } },
+      { keys: 'Ctrl+Z', callback: undo, options: { description: 'Undo' } },
+      { keys: 'Ctrl+Y', callback: redo, options: { description: 'Redo' } },
     ]);
-
-    return () => clear();
   }, []);
 
-  return <div>Editor with shortcuts</div>;
+  return <div>Your editor here</div>;
 }
 ```
 
-### Display Registered Shortcuts
+### Show Shortcuts to Users
 
 ```tsx
 import { FloatingShortcutsButton } from 'react-keyboard-shortcuts';
 
 function App() {
   return (
-    <div>
-      <YourComponents />
-      <FloatingShortcutsButton
-        position="bottom-right"
-        theme="dark"
-      />
-    </div>
+    <>
+      <YourApp />
+      <FloatingShortcutsButton position="bottom-right" theme="dark" />
+    </>
   );
 }
 ```
 
-## API Reference
+---
+
+## 📖 API Reference
 
 ### Hooks
 
-#### `useShortcut(keyString, callback, options?)`
+#### `useShortcut(keys, callback, options?)`
 
-Simple hook for registering a single shortcut.
+The simplest way to add a keyboard shortcut.
 
 ```tsx
-useShortcut('Ctrl+K', handleSearch, {
-  description: 'Open search',
-  preventDefault: true
-});
+useShortcut('Ctrl+K', openSearch, { description: 'Open search' });
 ```
 
-**Parameters:**
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `keyString` | `string` | Key combination (e.g., `'Ctrl+S'`, `'Alt+Shift+P'`) |
-| `callback` | `(e: KeyboardEvent) => void` | Function to execute |
-| `options` | `object` | Optional configuration |
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `keys` | `string` | ✅ | Key combination (e.g., `'Ctrl+S'`) |
+| `callback` | `(e: KeyboardEvent) => void` | ✅ | Handler function |
+| `options` | `ShortcutOptions` | ❌ | Configuration object |
+
+<details>
+<summary><strong>Options</strong></summary>
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `description` | `string` | `undefined` | Shown in FloatingShortcutsButton |
+| `preventDefault` | `boolean` | `true` | Prevent default browser action |
+| `stopPropagation` | `boolean` | `false` | Stop event bubbling |
+| `enabled` | `boolean` | `true` | Whether shortcut is active |
+
+</details>
+
+---
 
 #### `useKeyboardShortcuts(componentId?, options?)`
 
-Advanced hook for managing multiple shortcuts.
+Advanced hook for full control over shortcuts.
 
 ```tsx
 const {
-  register,      // Register new shortcuts
-  deregister,    // Remove specific shortcuts
-  enable,        // Enable disabled shortcuts
-  disable,       // Disable shortcuts (keep registered)
-  clear,         // Remove all shortcuts for this component
-  getRegisteredKeys,  // Get list of registered shortcuts
-  componentId    // Unique component identifier
+  register,           // Add shortcuts
+  deregister,         // Remove specific shortcuts
+  enable,             // Enable shortcuts
+  disable,            // Disable shortcuts
+  clear,              // Remove all shortcuts
+  getRegisteredKeys,  // Get current shortcuts
+  componentId,        // Component identifier
 } = useKeyboardShortcuts('my-component');
 ```
 
-**Return Type:**
+<details>
+<summary><strong>Full Return Type</strong></summary>
+
 ```typescript
 interface UseKeyboardShortcutsReturn {
   register: (definitions: ShortcutDefinition[]) => string[]
@@ -142,232 +194,301 @@ interface UseKeyboardShortcutsReturn {
   enable: (keys: string[]) => void
   disable: (keys: string[]) => void
   clear: () => void
-  getRegisteredKeys: () => ShortcutInfo[]
+  getRegisteredKeys: () => { keyString: string; description: string; enabled: boolean }[]
   componentId: string
 }
 ```
+
+</details>
+
+---
 
 ### Components
 
 #### `<FloatingShortcutsButton />`
 
-A floating button that displays all registered shortcuts in a panel.
+A floating button that displays all registered shortcuts.
 
 ```tsx
 <FloatingShortcutsButton
-  position="bottom-right"  // 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
-  buttonText="Shortcuts"   // Custom button text
-  showKeyboardIcon={true}  // Show keyboard icon
-  theme="dark"             // 'light' | 'dark'
-  filterComponents={['editor']}  // Only show shortcuts from specific components
+  position="bottom-right"
+  theme="dark"
+  buttonText="Shortcuts"
+  showKeyboardIcon={true}
 />
 ```
 
-**Props:**
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `position` | `string` | `'bottom-right'` | Button position |
+| `position` | `'top-left'` \| `'top-right'` \| `'bottom-left'` \| `'bottom-right'` | `'bottom-right'` | Button position |
+| `theme` | `'light'` \| `'dark'` | `'light'` | Color theme |
 | `buttonText` | `string` | `'Keyboard Shortcuts'` | Button label |
-| `showKeyboardIcon` | `boolean` | `true` | Show keyboard icon |
-| `theme` | `string` | `'light'` | Color theme |
-| `filterComponents` | `string[]` | `undefined` | Filter by component IDs |
+| `showKeyboardIcon` | `boolean` | `true` | Show ⌨️ icon |
+| `filterComponents` | `string[]` | `undefined` | Only show specific components |
 
-### Types
+---
 
-```typescript
-interface ShortcutDefinition {
-  keys: string | KeyCombination
-  callback: (event: KeyboardEvent) => void
-  options?: {
-    description?: string
-    preventDefault?: boolean  // default: true
-    stopPropagation?: boolean
-    enabled?: boolean         // default: true
-  }
-}
+### Utility Functions
 
-interface KeyCombination {
-  key: string
-  ctrl?: boolean
-  alt?: boolean
-  shift?: boolean
-  meta?: boolean
-}
-```
-
-### Core Functions
-
-```typescript
+```tsx
 import {
-  getShortcutManager,    // Get the singleton manager instance
-  resetShortcutManager,  // Reset manager (useful for testing)
-  parseKeyString,        // Parse 'Ctrl+S' to KeyCombination
-  keyCombinationToString // Convert KeyCombination to display string
+  getShortcutManager,     // Access the singleton manager
+  resetShortcutManager,   // Reset (useful for testing)
+  parseKeyString,         // 'Ctrl+S' → { key: 's', ctrl: true }
+  keyCombinationToString, // { key: 's', ctrl: true } → 'Ctrl+S'
 } from 'react-keyboard-shortcuts';
 ```
 
-## Supported Keys
+---
+
+## ⌨️ Supported Keys
+
+<table>
+<tr>
+<td>
 
 ### Modifiers
-`Ctrl`, `Alt`, `Shift`, `Meta` (Cmd on Mac)
+| Key | Windows/Linux | macOS |
+|-----|---------------|-------|
+| `Ctrl` | Ctrl | ⌃ Control |
+| `Alt` | Alt | ⌥ Option |
+| `Shift` | Shift | ⇧ Shift |
+| `Meta` | Win | ⌘ Command |
+
+</td>
+<td>
 
 ### Special Keys
 | Category | Keys |
 |----------|------|
-| Navigation | `Enter`, `Escape`, `Space`, `Tab`, `Backspace`, `Delete` |
-| Arrows | `ArrowUp`, `ArrowDown`, `ArrowLeft`, `ArrowRight` |
-| Page | `Home`, `End`, `PageUp`, `PageDown` |
-| Function | `F1` - `F12` |
+| Navigation | `Enter` `Escape` `Space` `Tab` `Backspace` `Delete` |
+| Arrows | `ArrowUp` `ArrowDown` `ArrowLeft` `ArrowRight` |
+| Page | `Home` `End` `PageUp` `PageDown` |
+| Function | `F1` through `F12` |
 
-### Standard Keys
-- Letters: `a` - `z`
-- Numbers: `0` - `9`
-- Symbols: `+`, `-`, `=`, `[`, `]`, `\`, `;`, `'`, `,`, `.`, `/`
+</td>
+</tr>
+</table>
 
-## Key String Format
-
-Key combinations use `+` as separator:
+### Key Format Examples
 
 ```
-Ctrl+S          // Ctrl and S
-Alt+Shift+P     // Alt, Shift, and P
-Meta+K          // Cmd+K on Mac, Win+K on Windows
-Ctrl+Alt+Delete // Multiple modifiers
+Ctrl+S              → Ctrl and S
+Ctrl+Shift+Z        → Ctrl, Shift and Z
+Alt+ArrowUp         → Alt and Arrow Up
+Meta+K              → Cmd+K (Mac) / Win+K (Windows)
+Ctrl+Alt+Delete     → All three modifiers
 ```
 
-## Examples
+---
 
-### List Navigation
+## 💡 Examples
+
+### 📋 List Navigation
 
 ```tsx
-function ListComponent({ items }) {
-  const [focusIndex, setFocusIndex] = useState(0);
+function ItemList({ items }) {
+  const [selected, setSelected] = useState(0);
   const { register } = useKeyboardShortcuts('list');
 
   useEffect(() => {
     register([
       {
         keys: 'ArrowUp',
-        callback: () => setFocusIndex(i => Math.max(0, i - 1)),
-        options: { description: 'Move up' }
+        callback: () => setSelected(i => Math.max(0, i - 1)),
+        options: { description: 'Previous item' }
       },
       {
         keys: 'ArrowDown',
-        callback: () => setFocusIndex(i => Math.min(items.length - 1, i + 1)),
-        options: { description: 'Move down' }
+        callback: () => setSelected(i => Math.min(items.length - 1, i + 1)),
+        options: { description: 'Next item' }
       },
       {
         keys: 'Enter',
-        callback: () => selectItem(focusIndex),
-        options: { description: 'Select item' }
+        callback: () => openItem(items[selected]),
+        options: { description: 'Open item' }
+      },
+      {
+        keys: 'Delete',
+        callback: () => deleteItem(items[selected]),
+        options: { description: 'Delete item' }
       }
     ]);
-  }, [items.length, focusIndex]);
+  }, [items, selected]);
 
-  return (/* ... */);
+  return (
+    <ul>
+      {items.map((item, i) => (
+        <li key={item.id} className={i === selected ? 'selected' : ''}>
+          {item.name}
+        </li>
+      ))}
+    </ul>
+  );
 }
 ```
 
-### Modal with Conditional Shortcuts
+---
+
+### 🔲 Modal Dialog
 
 ```tsx
-function ModalComponent({ isOpen, onClose, onConfirm }) {
+function Modal({ isOpen, onClose, onConfirm }) {
   const { register, clear } = useKeyboardShortcuts('modal');
 
   useEffect(() => {
     if (isOpen) {
       register([
-        {
-          keys: 'Escape',
-          callback: onClose,
-          options: { description: 'Close modal' }
-        },
-        {
-          keys: 'Enter',
-          callback: onConfirm,
-          options: { description: 'Confirm' }
-        }
+        { keys: 'Escape', callback: onClose, options: { description: 'Close' } },
+        { keys: 'Enter', callback: onConfirm, options: { description: 'Confirm' } }
       ]);
     } else {
       clear();
     }
-  }, [isOpen]);
+  }, [isOpen, onClose, onConfirm]);
 
   if (!isOpen) return null;
-  return (/* ... */);
+
+  return (
+    <div className="modal-overlay">
+      <div className="modal">
+        <h2>Confirm Action</h2>
+        <p>Are you sure you want to proceed?</p>
+        <div className="modal-actions">
+          <button onClick={onClose}>Cancel (Esc)</button>
+          <button onClick={onConfirm}>Confirm (Enter)</button>
+        </div>
+      </div>
+    </div>
+  );
 }
 ```
 
-### Enable/Disable Shortcuts
+---
+
+### ✏️ Rich Text Editor
 
 ```tsx
-function EditorComponent() {
+function RichTextEditor() {
   const [isEditing, setIsEditing] = useState(true);
   const { register, enable, disable } = useKeyboardShortcuts('editor');
 
   useEffect(() => {
     register([
       { keys: 'Ctrl+B', callback: toggleBold, options: { description: 'Bold' } },
-      { keys: 'Ctrl+I', callback: toggleItalic, options: { description: 'Italic' } }
+      { keys: 'Ctrl+I', callback: toggleItalic, options: { description: 'Italic' } },
+      { keys: 'Ctrl+U', callback: toggleUnderline, options: { description: 'Underline' } },
+      { keys: 'Ctrl+S', callback: saveDocument, options: { description: 'Save' } },
+      { keys: 'Ctrl+Z', callback: undo, options: { description: 'Undo' } },
+      { keys: 'Ctrl+Y', callback: redo, options: { description: 'Redo' } },
     ]);
   }, []);
 
+  // Enable/disable formatting shortcuts based on edit mode
   useEffect(() => {
-    if (isEditing) {
-      enable(['Ctrl+B', 'Ctrl+I']);
-    } else {
-      disable(['Ctrl+B', 'Ctrl+I']);
-    }
+    const formattingKeys = ['Ctrl+B', 'Ctrl+I', 'Ctrl+U'];
+    isEditing ? enable(formattingKeys) : disable(formattingKeys);
   }, [isEditing]);
 
-  return (/* ... */);
+  return (
+    <div className="editor">
+      <div className="toolbar">
+        <button onClick={() => setIsEditing(!isEditing)}>
+          {isEditing ? 'Preview' : 'Edit'}
+        </button>
+      </div>
+      <div className="content" contentEditable={isEditing}>
+        {/* Editor content */}
+      </div>
+    </div>
+  );
 }
 ```
 
-## Input Field Behavior
+---
 
-By default, shortcuts without modifiers are ignored when focus is on input fields to prevent interference with typing:
+## 🔧 Advanced Usage
 
-- `S` - **Ignored** in input fields
-- `Ctrl+S` - **Works** in input fields (has modifier)
-- `Enter` - **Ignored** in input fields
-- `Ctrl+Enter` - **Works** in input fields (has modifier)
+### Direct Manager Access
 
-## Browser Support
+```tsx
+import { getShortcutManager } from 'react-keyboard-shortcuts';
 
-- Chrome 60+
-- Firefox 55+
-- Safari 12+
-- Edge 79+
+// Get all registered shortcuts
+const manager = getShortcutManager();
+const allShortcuts = manager.getAllShortcuts();
 
-## TypeScript
+// Subscribe to shortcut changes
+manager.on('shortcut:registered', (shortcut) => {
+  console.log('New shortcut:', shortcut);
+});
+```
+
+### Testing
+
+```tsx
+import { resetShortcutManager } from 'react-keyboard-shortcuts';
+
+beforeEach(() => {
+  // Reset state between tests
+  resetShortcutManager();
+});
+```
+
+---
+
+## 📝 Input Field Behavior
+
+Shortcuts behave intelligently around input fields:
+
+| Shortcut | In Input Field | Reason |
+|----------|----------------|--------|
+| `S` | ❌ Ignored | Would interfere with typing |
+| `Ctrl+S` | ✅ Works | Has modifier key |
+| `Enter` | ❌ Ignored | Form submission |
+| `Ctrl+Enter` | ✅ Works | Has modifier key |
+| `Escape` | ✅ Works | Common to exit inputs |
+
+---
+
+## 🌐 Browser Support
+
+| Browser | Version |
+|---------|---------|
+| Chrome | 60+ |
+| Firefox | 55+ |
+| Safari | 12+ |
+| Edge | 79+ |
+
+---
+
+## 📄 TypeScript
 
 Full TypeScript support with exported types:
 
 ```typescript
 import type {
   KeyCombination,
-  ShortcutConfig,
   ShortcutDefinition,
+  ShortcutConfig,
   RegisteredShortcut,
   UseKeyboardShortcutsReturn,
-  FloatingShortcutsButtonProps
+  FloatingShortcutsButtonProps,
 } from 'react-keyboard-shortcuts';
 ```
 
-## License
+---
 
-MIT
+## 📜 License
 
-## Contributing
+MIT © [Your Name]
 
-Contributions are welcome! Please read our contributing guidelines before submitting a PR.
+---
 
-## Changelog
+<div align="center">
 
-### 1.0.0
-- Initial release
-- Core shortcut management functionality
-- `useShortcut` and `useKeyboardShortcuts` hooks
-- `FloatingShortcutsButton` component
-- Full TypeScript support
+**[⬆ Back to Top](#react-keyboard-shortcuts)**
+
+Made with ❤️ for the React community
+
+</div>
