@@ -8,8 +8,9 @@ export default function EditorDemo() {
   const [formatting, setFormatting] = useState({ bold: false, italic: false, underline: false });
   const [logs, setLogs] = useState<string[]>([]);
 
-  const { register, disable, enable } = useKeyboardShortcuts('editor-demo');
+  const { register, deregister, disable, enable } = useKeyboardShortcuts('editor-demo');
   const [shortcutsEnabled, setShortcutsEnabled] = useState(true);
+  const [saveRemoved, setSaveRemoved] = useState(false);
 
   const addLog = (msg: string) => {
     setLogs(prev => [...prev.slice(-5), `${new Date().toLocaleTimeString()}: ${msg}`]);
@@ -110,6 +111,26 @@ export default function EditorDemo() {
     setShortcutsEnabled(!shortcutsEnabled);
   };
 
+  const toggleSaveShortcut = () => {
+    if (saveRemoved) {
+      // Re-register the save shortcut
+      register([{
+        keys: 'Ctrl+S',
+        callback: (e) => {
+          e.preventDefault();
+          addLog(`Saved! (${text.length} chars)`);
+        },
+        options: { description: 'Save document' }
+      }]);
+      addLog('Save shortcut REGISTERED (Ctrl+S)');
+    } else {
+      // Deregister the save shortcut
+      deregister(['Ctrl+S']);
+      addLog('Save shortcut DEREGISTERED (Ctrl+S removed)');
+    }
+    setSaveRemoved(!saveRemoved);
+  };
+
   return (
     <div style={styles.container}>
       <div style={styles.editorSection}>
@@ -155,9 +176,14 @@ export default function EditorDemo() {
           <span>Chars: {text.length}</span>
         </div>
 
-        <button onClick={toggleShortcuts} style={{ ...styles.toggleBtn, backgroundColor: shortcutsEnabled ? '#4caf50' : '#f44336' }}>
-          Shortcuts: {shortcutsEnabled ? 'ON' : 'OFF'}
-        </button>
+        <div style={styles.buttonRow}>
+          <button onClick={toggleShortcuts} style={{ ...styles.toggleBtn, backgroundColor: shortcutsEnabled ? '#4caf50' : '#f44336' }}>
+            Shortcuts: {shortcutsEnabled ? 'ON' : 'OFF'}
+          </button>
+          <button onClick={toggleSaveShortcut} style={{ ...styles.toggleBtn, backgroundColor: saveRemoved ? '#ff9800' : '#2196f3' }}>
+            {saveRemoved ? 'Register Ctrl+S' : 'Deregister Ctrl+S'}
+          </button>
+        </div>
       </div>
 
       <div style={styles.logSection}>
@@ -172,14 +198,20 @@ export default function EditorDemo() {
       </div>
 
       <div style={styles.codeSection}>
-        <h4>Code Example - Enable/Disable</h4>
-        <pre style={styles.code}>{`const { register, disable, enable } = useKeyboardShortcuts('editor');
+        <h4>Code Example - Enable/Disable & Deregister</h4>
+        <pre style={styles.code}>{`const { register, deregister, disable, enable } = useKeyboardShortcuts('editor');
 
-// Disable specific shortcuts
+// Disable specific shortcuts (keeps them registered but inactive)
 disable(['Ctrl+Z', 'Ctrl+Y']);
 
 // Re-enable them
-enable(['Ctrl+Z', 'Ctrl+Y']);`}</pre>
+enable(['Ctrl+Z', 'Ctrl+Y']);
+
+// Deregister - completely removes the shortcut
+deregister(['Ctrl+S']);
+
+// Re-register if needed
+register([{ keys: 'Ctrl+S', callback: save, options: { description: 'Save' } }]);`}</pre>
       </div>
     </div>
   );
@@ -194,7 +226,8 @@ const styles: Record<string, React.CSSProperties> = {
   separator: { color: '#ccc', margin: '0 8px' },
   textarea: { width: '100%', minHeight: 150, padding: 12, borderRadius: 8, border: '1px solid #ccc', fontSize: 14, resize: 'vertical', boxSizing: 'border-box' },
   statusBar: { display: 'flex', justifyContent: 'space-between', marginTop: 8, fontSize: 12, color: '#666' },
-  toggleBtn: { marginTop: 12, padding: '8px 16px', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer' },
+  buttonRow: { display: 'flex', gap: 10, marginTop: 12 },
+  toggleBtn: { padding: '8px 16px', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer' },
   logSection: { backgroundColor: '#f5f5f5', padding: 20, borderRadius: 12 },
   logBox: { backgroundColor: '#fff', padding: 12, borderRadius: 6, minHeight: 120, fontFamily: 'monospace', fontSize: 12 },
   logEntry: { padding: '4px 0', borderBottom: '1px solid #eee' },
