@@ -11,7 +11,7 @@
 [![React](https://img.shields.io/badge/React-18+-61dafb?style=flat-square&logo=react&logoColor=white)](https://reactjs.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 
-[Features](#-features) · [Installation](#-installation) · [Quick Start](#-quick-start) · [API](#-api-reference) · [Examples](#-examples)
+[Features](#-features) · [Installation](#-installation) · [Quick Start](#-quick-start) · [API](#-api-reference) · [Examples](#-examples) · [NPM](./NPM_PACKAGE.md)
 
 </div>
 
